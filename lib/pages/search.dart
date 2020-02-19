@@ -18,7 +18,8 @@ class _SearchPageState extends State<SearchPage> {
   List<Word> words = List();
   List<Word> filteredWords = List();
   //DBHelper dbHelper = DBHelper();
-  DatabaseHelper dbHelper2 = DatabaseHelper();
+  //DatabaseHelper dbHelper2 = DatabaseHelper();
+  DBHelper dbHelper2 = DBHelper();
   void initState() {
     super.initState();
     setState(() {
@@ -30,14 +31,12 @@ class _SearchPageState extends State<SearchPage> {
       });
     });
   }
-
-
   @override
   Widget build(BuildContext context) {
     final LanguageBloc languageBloc = Provider.of<LanguageBloc>(context);
     return Scaffold(
       appBar: new AppBar(
-        title: languageBloc.isLatvian ? Text('Vārdu meklēšana') : Text('Search page'),
+        title: languageBloc.isLatvian ? Text('Meklēšana') : Text('Search page'),
       ),
       drawer: MyDrawer(),
       body: Column(
@@ -78,7 +77,7 @@ class _SearchPageState extends State<SearchPage> {
               itemCount: filteredWords.length,
               itemBuilder: (BuildContext context, int index){
                 return GestureDetector(
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SingleWord(filteredWords[index].wordID))),
+                  onTap: () => (Navigator.push(context, MaterialPageRoute(builder: (context) => SingleWord(filteredWords[index].wordID)))),
                   child: Card(
                     shape: BeveledRectangleBorder(
                       side: BorderSide(

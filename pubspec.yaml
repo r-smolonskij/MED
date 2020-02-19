@@ -17,14 +17,32 @@ dependencies:
   nice_button: ^0.1.7
   rflutter_alert: ^1.0.3
   flip_card: ^0.4.4
+  audioplayers: ^0.13.3
+  url_launcher: ^5.2.7
+  flutter_html: ^0.11.0
+  flutter_launcher_icons: ^0.7.4
   provider:
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo.png"
+
 flutter:
   uses-material-design: true
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Italic.ttf
+          style: italic
   assets:
-    - lib/assets/database.db
-    - lib/assets/doctors.jpg
+    - assets/database.db
+    - assets/medDB.db
+    - assets/med.db
+    - assets/bg.jpeg
+    - assets/logo.png
+    - assets/audios/

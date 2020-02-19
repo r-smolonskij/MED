@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:med/sqlite/database_helper.dart';
+import 'package:med/sqlite/db_helper.dart';
 import 'package:med/sqlite/field.dart';
 import 'package:med/sqlite/word.dart';
 import 'package:med/blocs/language_bloc.dart';
@@ -17,15 +18,17 @@ class FlipCardGame extends StatefulWidget {
 }
 
 class _FlipCardGameState extends State<FlipCardGame> {
-  Word foundedWord = Word(0, '', '', '');
-  Field foundedField = Field(0, '');
+  Word foundedWord = Word(0, '', '', '',);
+  Field foundedField = Field(0, '', '');
   List<Word> foundedWords = List();
-  DatabaseHelper dbHelper = DatabaseHelper();
+  DBHelper dbHelper = DBHelper();
+
   Random rand = new Random();
 
   Future<Word> _getWord() async {
     List<Word> words = await dbHelper.getWordsByFieldID(widget.fieldID);
-    foundedWord = await dbHelper.getWordByID(words[rand.nextInt(words.length)].wordID);
+    foundedWord =
+        await dbHelper.getWordByID(words[rand.nextInt(words.length)].wordID);
     return foundedWord;
   }
 
@@ -52,7 +55,7 @@ class _FlipCardGameState extends State<FlipCardGame> {
               if (snapshot.data == null) {
                 return Container(
                   child: Center(
-                    child: Text('Loading...'),
+                    child: Text(languageBloc.isLatvian ?  'Kaut kas nogāja greizi!' : 'There is some kind of error!', style: TextStyle(fontSize: 30.0 ),),
                   ),
                 );
               } else {
@@ -65,8 +68,8 @@ class _FlipCardGameState extends State<FlipCardGame> {
                       ),
                       Text(
                         languageBloc.isLatvian
-                            ? 'Apgriez kārti, lai tulkojumu angļu valodā!'
-                            : 'Flip card to see translation in Latvian!',
+                            ? 'Apgriez kārti, lai apskatītu tulkojumu!'
+                            : 'Flip card to see translation!',
                         style: TextStyle(
                           fontSize: 30,
                         ),
@@ -87,9 +90,13 @@ class _FlipCardGameState extends State<FlipCardGame> {
                               Expanded(
                                 child: Padding(
                                   padding: const EdgeInsets.all(20.0),
-                                  child: Text(
-                                    foundedWord.wordLV,
-                                    style: TextStyle(fontSize: 40.0, color: Colors.white),
+                                  child: Center(
+                                    child: Text(
+                                      languageBloc.isLatvian
+                                          ? foundedWord.wordLV : foundedWord.wordENG,
+                                      style: TextStyle(
+                                          fontSize: 30.0, color: Colors.white),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -107,9 +114,13 @@ class _FlipCardGameState extends State<FlipCardGame> {
                               Expanded(
                                 child: Padding(
                                   padding: const EdgeInsets.all(20.0),
-                                  child: Text(
-                                    foundedWord.wordENG,
-                                    style: TextStyle(fontSize: 40.0, color: Colors.white),
+                                  child: Center(
+                                    child: Text(
+                                      languageBloc.isLatvian
+                                          ? foundedWord.wordENG : foundedWord.wordLV,
+                                      style: TextStyle(
+                                          fontSize: 30.0, color: Colors.white),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -117,14 +128,16 @@ class _FlipCardGameState extends State<FlipCardGame> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 30.0,),
+                      SizedBox(
+                        height: 30.0,
+                      ),
                       Container(
                         height: 70.0,
                         width: 300.0,
                         child: RaisedButton(
                           color: Colors.green,
                           highlightColor: Colors.yellow,
-                          onPressed: (){
+                          onPressed: () {
                             setState(() {
                               _getWord();
                             });
@@ -133,8 +146,16 @@ class _FlipCardGameState extends State<FlipCardGame> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
-                              Text('Next', style: TextStyle(color: Colors.white, fontSize: 40.0),),
-                              Icon(Icons.arrow_forward_ios, color: Colors.white, size: 40.0,),
+                              Text(
+                                languageBloc.isLatvian ? 'Nākamais':'Next',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 40.0),
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                color: Colors.white,
+                                size: 40.0,
+                              ),
                             ],
                           ),
                         ),
@@ -145,8 +166,6 @@ class _FlipCardGameState extends State<FlipCardGame> {
               }
             }),
       ),
-
-
     );
   }
 }

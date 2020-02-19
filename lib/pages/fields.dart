@@ -15,19 +15,28 @@ class FieldsPage extends StatefulWidget {
 
 class _FieldsPageState extends State<FieldsPage> {
   List<Field> fields = List();
-  //DBHelper dbHelper = DBHelper();
-  DatabaseHelper dbHelper2 = DatabaseHelper();
+  DBHelper dbHelper = DBHelper();
   void initState() {
     super.initState();
     setState(() {
-      dbHelper2.getFields().then((fieldsFromDB) {
+      dbHelper.getFields().then((fieldsFromDB) {
         setState(() {
           fields = fieldsFromDB;
         });
       });
     });
   }
-
+//  DatabaseHelper dbHelper2 = DatabaseHelper();
+//  void initState() {
+//    super.initState();
+//    setState(() {
+//      dbHelper2.getFields().then((fieldsFromDB) {
+//        setState(() {
+//          fields = fieldsFromDB;
+//        });
+//      });
+//    });
+//  }
   @override
   Widget build(BuildContext context) {
     final LanguageBloc languageBloc = Provider.of<LanguageBloc>(context);
@@ -60,7 +69,7 @@ class _FieldsPageState extends State<FieldsPage> {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
-                            languageBloc.isLatvian ? fields[index].field : fields[index].field+' ENG',
+                            languageBloc.isLatvian ? fields[index].fieldLV : fields[index].fieldENG,
                             style: TextStyle(
                               fontSize: 18.0,
                               color: Colors.black,

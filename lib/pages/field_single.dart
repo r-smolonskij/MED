@@ -21,12 +21,13 @@ class _FieldSingleState extends State<FieldSingle> {
   List<Word> words = List();
   List<Word> filteredWords = List();
   //DBHelper dbHelper = DBHelper();
-  DatabaseHelper dbHelper2 = DatabaseHelper();
+  //DatabaseHelper dbHelper2 = DatabaseHelper();
+  DBHelper dbHelper2 = DBHelper();
   Field foundedField;
   Field field;
 
   Future<Field> _getField() async {
-    print(widget.id);
+
     field = await dbHelper2.getFieldByID(widget.id);
     return field;
   }
@@ -59,10 +60,9 @@ class _FieldSingleState extends State<FieldSingle> {
                 if (snapshot.data == null) {
                   return Text('');
                 } else {
-                   return Text(languageBloc.isLatvian ? snapshot.data.field : 'English');
+                   return Text(languageBloc.isLatvian ? snapshot.data.fieldLV  : snapshot.data.fieldENG );
                 }
               })
-          //Text(foundedField.field),
           ),
       drawer: MyDrawer(),
       body: Column(
@@ -99,7 +99,6 @@ class _FieldSingleState extends State<FieldSingle> {
           ),
           Expanded(
             child: ListView.builder(
-              //padding: EdgeInsets.all(10.0),
               itemCount: filteredWords.length,
               itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(

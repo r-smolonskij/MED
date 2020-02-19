@@ -23,9 +23,9 @@ class GamesList extends StatelessWidget {
               NiceButton(
                 elevation: 8.0,
                 radius: 52.0,
-                gradientColors: [Colors.cyan, Colors.red],
-                text: languageBloc.isLatvian ? ' "Uzraksti pareizi"' : "Writing Game",
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => FieldsForGamePage(0))),
+                gradientColors: [Colors.yellow, Colors.green],
+                text: languageBloc.isLatvian ? ' "Apgriez kārti"' : "Flip Card",
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => FieldsForGamePage(2))),
               ),
               SizedBox(height: 30.0,),
               NiceButton(
@@ -39,12 +39,11 @@ class GamesList extends StatelessWidget {
               NiceButton(
                 elevation: 8.0,
                 radius: 52.0,
-                gradientColors: [Colors.yellow, Colors.green],
-                text: languageBloc.isLatvian ? ' "Apgriez kārti"' : "Flip Card",
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => FieldsForGamePage(2))),
+                gradientColors: [Colors.cyan, Colors.red],
+                text: languageBloc.isLatvian ? ' "Uzraksti pareizi"' : "Writing Game",
+                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => FieldsForGamePage(0))),
               ),
               SizedBox(height: 30.0,),
-
             ],
         ),
       ),

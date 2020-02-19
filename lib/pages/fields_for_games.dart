@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:med/pages/writing-game.dart';
+import 'package:med/sqlite/db_helper.dart';
 import 'flip-card-game.dart';
 import 'package:med/sqlite/database_helper.dart';
 import 'package:med/sqlite/field.dart';
@@ -18,9 +19,8 @@ class FieldsForGamePage extends StatefulWidget {
 
 class _FieldsForGamePageState extends State<FieldsForGamePage> {
   List<Field> fields = List();
-  DatabaseHelper dbHelper = DatabaseHelper();
+  DBHelper dbHelper = DBHelper();
   List<Widget> FieldsWidget = List();
-
   Future<List<Field>> _getFields() async {
     fields = await dbHelper.getFields();
     return fields;
@@ -92,7 +92,7 @@ class _FieldsForGamePageState extends State<FieldsForGamePage> {
               if (snapshot.data == null) {
                 return Container(
                   child: Center(
-                    child: Text('Loading...'),
+                    child: Text(languageBloc.isLatvian ?  'Kaut kas nogāja greizi!' : 'There is some kind of error!', style: TextStyle(fontSize: 30.0 ),),
                   ),
                 );
               } else {
@@ -109,8 +109,8 @@ class _FieldsForGamePageState extends State<FieldsForGamePage> {
                           radius: 52.0,
                           gradientColors: [Colors.blue, Colors.deepPurple],
                           text: languageBloc.isLatvian
-                              ? fields[index].field
-                              : "Flip Card",
+                              ? fields[index].fieldLV
+                              : fields[index].fieldENG,
                           onPressed: () {
                             if(widget.gameID == 0){
                               Navigator.push(context, MaterialPageRoute(builder: (context) => WritingGame(fields[index].fieldID)));

@@ -3,7 +3,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:med/blocs/language_bloc.dart';
 import 'package:med/pages/fields.dart';
 import 'package:med/pages/games_list.dart';
+import 'package:med/pages/information.dart';
+import 'package:med/pages/grammar.dart';
 import 'package:med/pages/search.dart';
+import 'package:med/pages/sources.dart';
 import 'package:provider/provider.dart';
 
 class MyDrawer extends StatefulWidget {
@@ -23,7 +26,7 @@ class _MyDrawerState extends State<MyDrawer> {
             decoration: BoxDecoration(
               image: DecorationImage(
                   image: AssetImage(
-                      "lib/assets/doctors.jpg"),
+                      "assets/bg.jpeg"),
                   fit: BoxFit.cover),
             ),
             accountName: new Text('MED', style: TextStyle(fontSize: 100.0, height: -40.0, color: Colors.black),),
@@ -37,7 +40,19 @@ class _MyDrawerState extends State<MyDrawer> {
               Navigator.of(context).push(new MaterialPageRoute(
                 builder: (BuildContext context) => SearchPage(),
               ),),
-//                Navigator.of(context).pushNamed('/a'),
+            },
+          ),
+
+          new Divider(),
+          new ListTile(
+            leading: Icon(FontAwesomeIcons.infoCircle),
+            trailing: new Icon(Icons.arrow_forward_ios),
+            title: languageBloc.isLatvian ? new Text('Informācija par MED') : new Text('Info about MED'),
+            onTap: () => {
+              Navigator.of(context).pop(),
+              Navigator.of(context).push(new MaterialPageRoute(
+                builder: (BuildContext context) => InformationPage(),
+              ),),
             },
           ),
           new Divider(),
@@ -50,20 +65,18 @@ class _MyDrawerState extends State<MyDrawer> {
               Navigator.of(context).push(new MaterialPageRoute(
                 builder: (BuildContext context) => FieldsPage(),
               ),),
-//                Navigator.of(context).pushNamed('/a'),
             },
           ),
           new Divider(),
           new ListTile(
-            leading: Icon(FontAwesomeIcons.infoCircle),
+            leading: Icon(FontAwesomeIcons.book),
             trailing: new Icon(Icons.arrow_forward_ios),
-            title: languageBloc.isLatvian ? new Text('Informācija par MED') : new Text('Info about MED'),
+            title: languageBloc.isLatvian ? new Text('Avotu saraksts') : new Text('List of sources of information'),
             onTap: () => {
               Navigator.of(context).pop(),
               Navigator.of(context).push(new MaterialPageRoute(
-                //builder: (BuildContext context) => NewPage('Page One'),
+                builder: (BuildContext context) => SourcesList(),
               ),),
-//                Navigator.of(context).pushNamed('/a'),
             },
           ),
           new Divider(),
@@ -76,7 +89,18 @@ class _MyDrawerState extends State<MyDrawer> {
               Navigator.of(context).push(new MaterialPageRoute(
                 builder: (BuildContext context) => GamesList(),
               ),),
-//                Navigator.of(context).pushNamed('/a'),
+            },
+          ),
+          new Divider(),
+          new ListTile(
+            leading: Icon(FontAwesomeIcons.pen),
+            trailing: new Icon(Icons.arrow_forward_ios),
+            title: languageBloc.isLatvian ? new Text('Latviešu gramatikas pārskats') : new Text('Review of Latvian Grammar') ,
+            onTap: () => {
+              Navigator.of(context).pop(),
+              Navigator.of(context).push(new MaterialPageRoute(
+                builder: (BuildContext context) => GrammarPage(),
+              ),),
             },
           ),
           new Divider(),

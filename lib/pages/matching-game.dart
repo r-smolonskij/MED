@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:med/sqlite/database_helper.dart';
+import 'package:med/sqlite/db_helper.dart';
 import 'package:med/sqlite/field.dart';
 import 'package:med/sqlite/word.dart';
 import 'package:med/blocs/language_bloc.dart';
@@ -17,9 +18,11 @@ class MatchingGame extends StatefulWidget {
 class _MatchingGameState extends State<MatchingGame> {
   int wordsCount;
   var rng = new Random();
-  int correctAnswerNumber = 0;
-  DatabaseHelper dbHelper = DatabaseHelper();
+  Word correctAnswer;
+  //DatabaseHelper dbHelper = DatabaseHelper();
+  DBHelper dbHelper = DBHelper();
   List<Word> answerVariation = List();
+  String wordType;
 
   Future<List<Word>> _getRandomWords() async {
     answerVariation.clear();
@@ -27,75 +30,74 @@ class _MatchingGameState extends State<MatchingGame> {
     List<Word> words = await dbHelper.getWordsByFieldID(field.fieldID);
     int wordsCount = words.length;
     List<int> numbers = List();
-    correctAnswerNumber = rng.nextInt(4);
-    for (var i = 0; i < 4;) {
+    correctAnswer = words[rng.nextInt(wordsCount)];
+    var count = await dbHelper.getWordsCountByFieldIDandType(field.fieldID, correctAnswer.wordType);
+    answerVariation.add(correctAnswer);
+    wordType = correctAnswer.wordType;
+    for (var i = 1; i < 4;) {
       var randomNumber = rng.nextInt(wordsCount);
-      if (!numbers.contains(randomNumber)) {
+      if (!numbers.contains(randomNumber) && words[randomNumber].wordType == correctAnswer.wordType) {
         numbers.add(randomNumber);
         answerVariation
             .add(await dbHelper.getWordByID(words[randomNumber].wordID));
         i++;
       }
     }
+    answerVariation.shuffle();
     return answerVariation;
   }
-
-  Widget instructionText(Word word) {
+  Widget instructionText(Word word, String type) {
     final LanguageBloc languageBloc = Provider.of<LanguageBloc>(context);
-    String type = word.type;
-    if (languageBloc.isLatvian) {
-      if (type == 'V') {
-        return Text(
-          'Izvēlieties šim vārdam/frāzei tulkojumu angļu valodā: "' +
-              word.wordLV +
-              '"',
+    return Column(
+      children: <Widget>[
+        type =='V' ? Text(
+          languageBloc.isLatvian ?
+          'Izvēlieties šim vārdam/frāzei tulkojumu angļu valodā: ' :
+          'Choose Latvian translation to this word/phrase: ',
           style: TextStyle(
-            fontSize: 33.0,
+            fontSize: 28.0,
           ),
-        );
-      } else if (type == 'J') {
-        return Text(
-          'Izvēlieties šim jautājumam tulkojumu angļu valodā: "' +
-              word.wordLV +
-              '"',
+        ) : SizedBox(height: 0,),
+        type =='J' ? Text(
+          languageBloc.isLatvian ?
+          'Izvēlieties šim jautājumam tulkojumu angļu valodā: ' :
+          'Choose Latvian translation to this question: ',
           style: TextStyle(
-            fontSize: 33.0,
+            fontSize: 28.0,
           ),
-        );
-      } else if (type == 'N') {
-        return Text(
-          'Izvēlieties šim norādījumam tulkojumu angļu valodā: "' +
-              word.wordLV +
-              '"',
+        ) : SizedBox(height: 0,),
+        type =='N' ? Text(
+          languageBloc.isLatvian ?
+          'Izvēlieties šim norādījumam tulkojumu angļu valodā: ' :
+          'Choose Latvian translation to this instruction: ',
           style: TextStyle(
-            fontSize: 33.0,
+            fontSize: 28.0,
           ),
-        );
-      }
-    } else {
-      if (type == 'V') {
-        return Text(
-          'Write this word/phrase in Latvian: "' + word.wordENG + '"',
+        ) : SizedBox(height: 0,),
+        type=='' ? Text(
+          languageBloc.isLatvian ?
+          'Izvēlieties šim tulkojumu angļu valodā: ' :
+          'Choose Latvian translation to this: ',
           style: TextStyle(
-            fontSize: 33.0,
+            fontSize: 28.0,
           ),
-        );
-      } else if (type == 'J') {
-        return Text(
-          'Write this question in Latvian: "' + word.wordENG + '"',
+        ) : SizedBox(height: 0,),
+        Divider(
+          height: 20,
+          color: Colors.blueGrey,
+          thickness: 2,
+        ),
+        Text(
+          languageBloc.isLatvian ?
+          '"' + word.wordLV + '"' :
+          '"' + word.wordENG + '"',
           style: TextStyle(
-            fontSize: 33.0,
+            fontSize: 25.0,
+            fontFamily: 'Poppins',
           ),
-        );
-      } else if (type == 'N') {
-        return Text(
-          'Write this instruction in Latvian: "' + word.wordENG + '"',
-          style: TextStyle(
-            fontSize: 33.0,
-          ),
-        );
-      }
-    }
+        ),
+      ],
+    );
   }
 
   Word getCorrectAnswer(List<Word> words) {
@@ -120,7 +122,6 @@ class _MatchingGameState extends State<MatchingGame> {
               languageBloc.isLatvian ? "NĀKOŠAIS" : 'NEXT',
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
-            //onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => WritingGame(widget.fieldID))),
             onPressed: () {
               setState(() {
                 Navigator.pop(context);
@@ -152,7 +153,6 @@ class _MatchingGameState extends State<MatchingGame> {
                 Navigator.pop(context);
               });
             },
-            //onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => WritingGame(widget.fieldID))),
           )
         ],
       ).show();
@@ -164,26 +164,7 @@ class _MatchingGameState extends State<MatchingGame> {
     final LanguageBloc languageBloc = Provider.of<LanguageBloc>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('"Saliec kopā"'),
-        /*
-        automaticallyImplyLeading: false,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 30.0, 0),
-              child: Text('"Saliec kopā"', style: TextStyle(fontSize: 25.0, letterSpacing: 2.0)),
-            ),
-          ],
-        ),
-        actions: <Widget>[
-          FlatButton(
-            textColor: Colors.white,
-            onPressed: () { },
-            child: Icon(Icons.apps, size: 40.0,),
-            shape: CircleBorder(side: BorderSide(color: Colors.transparent)),
-          ),
-        ],*/
+        title: Text(languageBloc.isLatvian ? '"Saliec kopā"' : 'Matching Game'),
       ),
       body: Center(
         child: FutureBuilder(
@@ -205,7 +186,7 @@ class _MatchingGameState extends State<MatchingGame> {
                     Padding(
                       padding: const EdgeInsets.all(20.0),
                       child:
-                          instructionText(snapshot.data[correctAnswerNumber]),
+                          instructionText(correctAnswer, wordType),
                     ),
                     new Expanded(
                       child: ListView.builder(
@@ -218,7 +199,7 @@ class _MatchingGameState extends State<MatchingGame> {
                               color: Colors.deepPurple,
                               textColor: Colors.white,
                               onPressed: () {
-                                checkAnswer(snapshot.data[correctAnswerNumber],
+                                checkAnswer(correctAnswer,
                                     snapshot.data[index]);
                               },
                               child: Column(

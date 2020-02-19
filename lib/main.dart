@@ -1,8 +1,7 @@
 import 'dart:wasm';
 import 'package:med/blocs/language_bloc.dart';
 import 'package:med/pages/search.dart';
-import 'package:med/sqlite/db_helper.dart';
-import 'package:med/sqlite/db_seeder.dart';
+//import 'package:med/sqlite/db_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'drawer.dart';
@@ -23,7 +22,7 @@ class MyApp extends StatelessWidget {
         theme: new ThemeData(
           primarySwatch: Colors.deepPurple,
         ),
-        home: new HomePage(),
+        home: new SearchPage(),
         routes: <String, WidgetBuilder>{
           '/searchPage': (BuildContext context) => new SearchPage(),
        }
@@ -38,29 +37,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  //DBSeeder dbSeeder = DBSeeder();
-  //DBHelper dbHelper = DBHelper();
   DatabaseHelper dbHelper2 = DatabaseHelper();
   void initState(){
-    //dbSeeder.wordsSeed();
-    //dbSeeder.fieldsSeed();
-    //dbSeeder.wordsFieldsRelationshipSeed();
     super.initState();
-    dbHelper2.getFieldsCount().then((count) {
-      setState(() {
-       if(count > 0){
-         print('Lielāks par 0');
-         print(count);
-       }
-       else{
-         print('Mazāks par 0');
-         //dbSeeder.wordsSeed();
-         //dbSeeder.fieldsSeed();
-         //dbSeeder.wordsFieldsRelationshipSeed();
-       }
-      });
-    });
-
+//    dbHelper2.getFieldsCount().then((count) {
+//      setState(() {
+//       if(count > 0){
+//         print('Lielāks par 0');
+//         print(count);
+//       }
+//       else{
+//         print('Mazāks par 0');
+//       }
+//      });
+//    });
   }
   @override
   Widget build(BuildContext context) {

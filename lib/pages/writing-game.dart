@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:med/blocs/language_bloc.dart';
 import 'package:med/sqlite/database_helper.dart';
+import 'package:med/sqlite/db_helper.dart';
 import 'package:med/sqlite/field.dart';
 import 'package:med/sqlite/word.dart';
 import 'package:provider/provider.dart';
@@ -16,90 +17,81 @@ class WritingGame extends StatefulWidget {
 }
 
 class _WritingGameState extends State<WritingGame> {
+
+ String wordType = '';
   Future<Word> _getRandomWord() async {
     if (canChangeWord) {
       var rng = new Random();
       //Field field = await dbHelper.getFieldByID(widget.fieldID);
       List<Word> words = await dbHelper.getWordsByFieldID(widget.fieldID);
-      randomWord =
-          await dbHelper.getWordByID(words[rng.nextInt(words.length)].wordID);
+      randomWord = await dbHelper.getWordByID(words[rng.nextInt(words.length)].wordID);
+      wordType = randomWord.wordType;
       canChangeWord = false;
+      //wordType = await dbHelper.getWordTypeByWordID(randomWord.wordID);
     }
     return randomWord;
   }
-
   bool canChangeWord = true;
   int randomNumber = 0;
   Field field;
-  DatabaseHelper dbHelper = DatabaseHelper();
+  //DatabaseHelper dbHelper = DatabaseHelper();
+  DBHelper dbHelper = DBHelper();
   Word randomWord;
-
   @override
-//  void initState() {
-//    super.initState();
-//    setState(() {
-//      print(widget.fieldID);
-//      dbHelper.getFieldByID(widget.fieldID).then((field) {
-//        dbHelper.getWordsByFieldID(field.fieldID).then((words) {
-//          var rng = new Random();
-//          dbHelper.getWordByID(words[rng.nextInt(words.length)].wordID).then((word) {
-//            print(word.wordLV);
-//            randomWord = word;
-//          });
-//        });
-//      });
-//    });
-//  }
-  Widget instructionText(Word word) {
+  Widget instructionText(Word word, int type) {
     final LanguageBloc languageBloc = Provider.of<LanguageBloc>(context);
-    String type = word.type;
-    if (languageBloc.isLatvian) {
-      if (type == 'V') {
-        return Text(
-          'Uzrakstiet šo vārdu/frāzi angļu valodā: "' + word.wordLV + '"',
+
+    return Column(
+      children: <Widget>[
+        word.wordType == 'V' ? Text(
+            languageBloc.isLatvian ?
+            'Uzrakstiet šo vārdu/frāzi angļu valodā' :
+            'Write this word/phrase in Latvian',
+            style: TextStyle(
+              fontSize: 33.0,
+            ),
+          ): SizedBox(height: 0,),
+        word.wordType == 'J' ? Text(
+          languageBloc.isLatvian ?
+          'Uzrakstiet šo jautājumu angļu valodā':
+          'Write this question in Latvian',
           style: TextStyle(
             fontSize: 33.0,
           ),
-        );
-      } else if (type == 'J') {
-        return Text(
-          'Uzrakstiet šo jautājumu angļu valodā: "' + word.wordLV + '"',
+        ): SizedBox(height: 0,),
+        word.wordType == 'N' ? Text(
+          languageBloc.isLatvian ?
+          'Uzrakstiet šo norādījumu angļu valodā' :
+          'Write this instruction in Latvian',
           style: TextStyle(
             fontSize: 33.0,
           ),
-        );
-      } else if (type == 'N') {
-        return Text(
-          'Uzrakstiet šo norādījumu angļu valodā: "' + word.wordLV + '"',
+        ): SizedBox(height: 0,),
+        word.wordType == '' ? Text(
+          languageBloc.isLatvian ?
+          'Uzrakstiet šo angļu valodā' :
+          'Write this in Latvian',
           style: TextStyle(
             fontSize: 33.0,
           ),
-        );
-      }
-    } else {
-      if (type == 'V') {
-        return Text(
-          'Write this word/phrase in Latvian: "' + word.wordENG + '"',
+        ): SizedBox(height: 0,),
+        Divider(
+          height: 20,
+          color: Colors.blueGrey,
+          thickness: 2,
+        ),
+        Text(
+          languageBloc.isLatvian ?
+          '"' + word.wordLV + '"' :
+          '"' + word.wordENG + '"',
           style: TextStyle(
-            fontSize: 33.0,
+            fontSize: 25.0,
+            fontFamily: 'Poppins',
           ),
-        );
-      } else if (type == 'J') {
-        return Text(
-          'Write this question in Latvian: "' + word.wordENG + '"',
-          style: TextStyle(
-            fontSize: 33.0,
-          ),
-        );
-      } else if (type == 'N') {
-        return Text(
-          'Write this instruction in Latvian: "' + word.wordENG + '"',
-          style: TextStyle(
-            fontSize: 33.0,
-          ),
-        );
-      }
-    }
+        ),
+      ],
+    );
+
   }
 
   Future<bool> checkAnswer(String answer, Word word) {
@@ -122,9 +114,11 @@ class _WritingGameState extends State<WritingGame> {
             ),
             //onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => WritingGame(widget.fieldID))),
             onPressed: () {
-              canChangeWord = true;
-              answerController.text = '';
-              Navigator.pop(context);
+              setState(() {
+                canChangeWord = true;
+                answerController.text = '';
+                Navigator.pop(context);
+              });
             },
           )
         ],
@@ -148,9 +142,11 @@ class _WritingGameState extends State<WritingGame> {
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
             onPressed: () {
-              canChangeWord = true;
-              answerController.text = '';
-              Navigator.pop(context);
+              setState(() {
+                canChangeWord = true;
+                answerController.text = '';
+                Navigator.pop(context);
+              });
             },
             //onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => WritingGame(widget.fieldID))),
           )
@@ -189,10 +185,11 @@ class _WritingGameState extends State<WritingGame> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(20.0),
-                      child: instructionText(snapshot.data),
+                      child: instructionText(snapshot.data, 20001),
                     ),
                     TextField(
                       controller: answerController,
+                      autofocus: false,
                       style: TextStyle(
                         fontSize: 25.0,
                       ),
@@ -214,7 +211,6 @@ class _WritingGameState extends State<WritingGame> {
                       child: RaisedButton(
                         color: Colors.deepPurple,
                         textColor: Colors.white,
-                        autofocus: true,
                         onPressed: () {
                           checkAnswer(answerController.text, snapshot.data);
                         },
